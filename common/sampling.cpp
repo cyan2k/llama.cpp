@@ -1,3 +1,5 @@
+
+
 #include "sampling.h"
 
 #include "common.h"
@@ -130,10 +132,10 @@ std::string gpt_sampler_params::print() const {
 
     snprintf(result, sizeof(result),
             "\trepeat_last_n = %d, repeat_penalty = %.3f, frequency_penalty = %.3f, presence_penalty = %.3f\n"
-            "\ttop_k = %d, tfs_z = %.3f, top_p = %.3f, min_p = %.3f, typical_p = %.3f, temp = %.3f\n"
+            "\ttop_k = %d, tfs_z = %.3f, top_p = %.3f, min_p = %.3f, typical_p = %.3f, temp = %.3f, xtc_threshold = %.3f, xtc_probability = %.3f\n"
             "\tmirostat = %d, mirostat_lr = %.3f, mirostat_ent = %.3f",
             penalty_last_n, penalty_repeat, penalty_freq, penalty_present,
-            top_k, tfs_z, top_p, min_p, typ_p, temp,
+            top_k, tfs_z, top_p, min_p, typ_p, temp, xtc_threshold, xtc_probability,
             mirostat, mirostat_eta, mirostat_tau);
 
     return std::string(result);
@@ -194,7 +196,9 @@ struct gpt_sampler * gpt_sampler_init(const struct llama_model * model, const st
                         llama_sampler_chain_add(result->chain, llama_sampler_init_temp_ext (params.temp, params.dynatemp_range, params.dynatemp_exponent));
                         break;
                     case GPT_SAMPLER_TYPE_XTC:
-                        llama_sampler_chain_add(result->chain, llama_sampler_init_xtc(params.xtc_threshold, params.xtc_probability, params.seed));
+                        if (params.xtc_threshold > 0.0f) {
+                            llama_sampler_chain_add(result->chain, llama_sampler_init_xtc(params.xtc_threshold, params.xtc_probability, params.seed));
+                        }
                         break;
                     default:
                         GGML_ASSERT(false && "unknown sampler type");

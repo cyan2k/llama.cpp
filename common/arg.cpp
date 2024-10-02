@@ -1024,6 +1024,20 @@ gpt_params_context gpt_params_parser_init(gpt_params & params, llama_example ex,
         }
     ).set_sparam());
     add_opt(llama_arg(
+        {"--xtc-threshold"}, "N",
+        format("xtc threshold (default: %.1f) - 0.0 deactivates", (double)params.sparams.xtc_threshold),
+        [](gpt_params & params, const std::string & value) {
+            params.sparams.xtc_threshold = std::stof(value);
+        }
+    ).set_sparam());
+    add_opt(llama_arg(
+        {"--xtc-probability"}, "N",
+        format("xtc probability (default: %.1f)", (double)params.sparams.xtc_probability),
+        [](gpt_params & params, const std::string & value) {
+            params.sparams.xtc_probability = std::stof(value);
+        }
+    ).set_sparam());
+    add_opt(llama_arg(
         {"--mirostat"}, "N",
         format("use Mirostat sampling.\nTop K, Nucleus, Tail Free and Locally Typical samplers are ignored if used.\n"
         "(default: %d, 0 = disabled, 1 = Mirostat, 2 = Mirostat 2.0)", params.sparams.mirostat),

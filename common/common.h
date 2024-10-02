@@ -133,7 +133,8 @@ struct gpt_sampler_params {
         GPT_SAMPLER_TYPE_TYPICAL_P,
         GPT_SAMPLER_TYPE_TOP_P,
         GPT_SAMPLER_TYPE_MIN_P,
-        GPT_SAMPLER_TYPE_TEMPERATURE
+        GPT_SAMPLER_TYPE_TEMPERATURE,
+        GPT_SAMPLER_TYPE_XTC
     };
 
     std::string grammar; // optional BNF-like grammar to constrain sampling

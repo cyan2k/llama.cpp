@@ -1090,6 +1090,8 @@ extern "C" {
     LLAMA_API struct llama_sampler * llama_sampler_init_typical    (float   p, size_t min_keep);
     LLAMA_API struct llama_sampler * llama_sampler_init_temp       (float   t);
 
+    LLAMA_API struct llama_sampler * llama_sampler_init_xtc(float threshold, float probability, uint32_t seed);
+
     /// @details Dynamic temperature implementation (a.k.a. entropy) described in the paper https://arxiv.org/abs/2309.02772.
     LLAMA_API struct llama_sampler * llama_sampler_init_temp_ext   (float   t, float   delta, float exponent);
 
