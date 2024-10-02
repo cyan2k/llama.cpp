@@ -193,6 +193,9 @@ struct gpt_sampler * gpt_sampler_init(const struct llama_model * model, const st
                     case GPT_SAMPLER_TYPE_TEMPERATURE:
                         llama_sampler_chain_add(result->chain, llama_sampler_init_temp_ext (params.temp, params.dynatemp_range, params.dynatemp_exponent));
                         break;
+                    case GPT_SAMPLER_TYPE_XTC:
+                        llama_sampler_chain_add(result->chain, llama_sampler_init_xtc(params.xtc_threshold, params.xtc_probability, params.seed));
+                        break;
                     default:
                         GGML_ASSERT(false && "unknown sampler type");
                 }

@@ -15,6 +15,17 @@
 #include <random>
 #include <unordered_map>
 
+
+struct llama_sampler_xtc {
+    const float threshold;
+    const float probability;
+
+    const uint32_t seed;
+          uint32_t seed_cur;
+
+    std::mt19937 rng;
+};
+
 static int llama_sample_dist(llama_token_data_array * cur_p, std::mt19937 & rng) {
     // iterator for the probabilities
 #ifdef __GNUC__
@@ -179,6 +190,10 @@ static uint32_t get_rng_seed(uint32_t seed) {
 
 // llama_sampler API
 
+static const char * llama_sampler_xtc_name(const struct llama_sampler * /*smpl*/) {
+    return "xtc";
+}
+
 const char * llama_sampler_name(const struct llama_sampler * smpl) {
     if (!smpl->iface) {
         return "(null)";
@@ -193,6 +208,77 @@ void llama_sampler_accept(struct llama_sampler * smpl, llama_token token) {
     }
 }
 
+static void llama_sampler_xtc_apply(struct llama_sampler * smpl, llama_token_data_array * cur_p) {
+    auto * ctx = (llama_sampler_xtc *) smpl->ctx;
+
+    std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+    float rand_val = dist(ctx->rng);
+
+    if (rand_val >= ctx->probability) {
+        return; // Do nothing
+    }
+
+    // Create a vector of structs that include the original index
+    struct llama_token_data_with_index {
+        llama_token_data data;
+        size_t original_index;
+    };
+
+    std::vector<llama_token_data_with_index> sorted_data_with_index(cur_p->size);
+
+    for (size_t i = 0; i < cur_p->size; ++i) {
+        sorted_data_with_index[i] = { cur_p->data[i], i };
+    }
+
+    // Now sort sorted_data_with_index in descending order of logits
+    std::sort(sorted_data_with_index.begin(), sorted_data_with_index.end(), [](const llama_token_data_with_index & a, const llama_token_data_with_index & b) {
+        return a.data.logit > b.data.logit;
+    });
+
+    // Compute softmax probabilities
+    float max_l = sorted_data_with_index[0].data.logit;
+    float cum_sum = 0.0f;
+    for (size_t i = 0; i < sorted_data_with_index.size(); ++i) {
+        float p = expf(sorted_data_with_index[i].data.logit - max_l);
+        sorted_data_with_index[i].data.p = p;
+        cum_sum += p;
+    }
+    for (size_t i = 0; i < sorted_data_with_index.size(); ++i) {
+        sorted_data_with_index[i].data.p /= cum_sum;
+    }
+
+    // Initialize vector<bool> to mark indices to remove
+    std::vector<bool> sorted_indices_to_remove(sorted_data_with_index.size(), false);
+
+    // For indices i from 0 to sorted_data_with_index.size() - 2
+    for (size_t i = 0; i + 1 < sorted_data_with_index.size(); ++i) {
+        if (sorted_data_with_index[i + 1].data.p >= ctx->threshold) {
+            sorted_indices_to_remove[i] = true;
+        }
+    }
+
+    // Now, create a vector<bool> indices_to_remove of size cur_p->size, initialized to false
+    std::vector<bool> indices_to_remove(cur_p->size, false);
+
+    // Map the sorted indices back to original indices
+    for (size_t i = 0; i < sorted_data_with_index.size(); ++i) {
+        if (sorted_indices_to_remove[i]) {
+            size_t orig_idx = sorted_data_with_index[i].original_index;
+            indices_to_remove[orig_idx] = true;
+        }
+    }
+
+    // Now, set the logits of the tokens to -INFINITY where indices_to_remove[i] is true
+    for (size_t i = 0; i < cur_p->size; ++i) {
+        if (indices_to_remove[i]) {
+            cur_p->data[i].logit = -INFINITY;
+        }
+    }
+
+    // Since we have modified the logits, cur_p->sorted is no longer valid
+    cur_p->sorted = false;
+}
+
 void llama_sampler_apply(struct llama_sampler * smpl, struct llama_token_data_array * cur_p) {
     GGML_ASSERT(smpl->iface->apply);
     smpl->iface->apply(smpl, cur_p);
@@ -203,6 +289,26 @@ void llama_sampler_reset(struct llama_sampler * smpl) {
         smpl->iface->reset(smpl);
     }
 }
+
+static void llama_sampler_xtc_reset(struct llama_sampler * smpl) {
+    auto * ctx = (llama_sampler_xtc *) smpl->ctx;
+    ctx->seed_cur = get_rng_seed(ctx->seed);
+    ctx->rng.seed(ctx->seed_cur);
+}
+
+static struct llama_sampler * llama_sampler_xtc_clone(const struct llama_sampler * smpl) {
+    const auto * ctx = (const llama_sampler_xtc *) smpl->ctx;
+    auto * result = llama_sampler_init_xtc(ctx->threshold, ctx->probability, ctx->seed);
+
+    // Copy the RNG state
+    {
+        auto * result_ctx = (llama_sampler_xtc *) result->ctx;
+        result_ctx->rng = ctx->rng;
+    }
+
+    return result;
+}
+
 
 struct llama_sampler * llama_sampler_clone(const struct llama_sampler * smpl) {
     if (smpl->iface->clone) {
@@ -218,6 +324,11 @@ struct llama_sampler * llama_sampler_clone(const struct llama_sampler * smpl) {
 
     GGML_ABORT("the sampler does not support cloning");
 }
+
+static void llama_sampler_xtc_free(struct llama_sampler * smpl) {
+    delete (llama_sampler_xtc *) smpl->ctx;
+}
+
 
 void llama_sampler_free(struct llama_sampler * smpl) {
     if (smpl == nullptr) {
@@ -321,6 +432,31 @@ static void llama_sampler_chain_free(struct llama_sampler * smpl) {
 
     delete chain;
 }
+
+static struct llama_sampler_i llama_sampler_xtc_i = {
+    /* .name   = */ llama_sampler_xtc_name,
+    /* .accept = */ nullptr,
+    /* .apply  = */ llama_sampler_xtc_apply,
+    /* .reset  = */ llama_sampler_xtc_reset,
+    /* .clone  = */ llama_sampler_xtc_clone,
+    /* .free   = */ llama_sampler_xtc_free,
+};
+
+struct llama_sampler * llama_sampler_init_xtc(float threshold, float probability, uint32_t seed) {
+    auto seed_cur = get_rng_seed(seed);
+    return new llama_sampler {
+        /* .iface = */ &llama_sampler_xtc_i,
+        /* .ctx   = */ new llama_sampler_xtc {
+            /* .threshold = */ threshold,
+            /* .probability = */ probability,
+            /* .seed     = */ seed,
+            /* .seed_cur = */ seed_cur,
+            /* .rng      = */ std::mt19937(seed_cur),
+        },
+    };
+}
+
+
 
 static struct llama_sampler_i llama_sampler_chain_i = {
     /* .name   = */ llama_sampler_chain_name,

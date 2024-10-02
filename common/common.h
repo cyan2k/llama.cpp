@@ -90,6 +90,7 @@ enum gpt_sampler_type {
     GPT_SAMPLER_TYPE_TFS_Z       = 4,
     GPT_SAMPLER_TYPE_TYPICAL_P   = 5,
     GPT_SAMPLER_TYPE_TEMPERATURE = 6,
+    GPT_SAMPLER_TYPE_XTC = 7,
 };
 
 // dimensionality reduction methods, used by cvector-generator
@@ -123,6 +124,8 @@ struct gpt_sampler_params {
     bool    penalize_nl       = false; // consider newlines as a repeatable token
     bool    ignore_eos        = false;
     bool    no_perf           = false; // disable performance metrics
+    float xtc_threshold = 0.1f;    
+    float xtc_probability = 0.5f;   
 
     std::vector<enum gpt_sampler_type> samplers = {
         GPT_SAMPLER_TYPE_TOP_K,
