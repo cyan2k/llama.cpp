@@ -10,7 +10,13 @@ TLDR; It's a way to ignore the top X tokens (exclude top choices = XTC). It remo
 
 Don't use this sampler when accuracy is important (although testing should be done, how much performance is actually getting lost).
 
-You find some text examples in the `xtc-examples` folder (t = threshold, p = probability, xtcchain = minimal xtcchain enabled, t and p = 0 is default llama.cpp and xtc deactivated)
+You find some text examples in the `xtc-examples` folder 
+
+All generated with the same prompt and seed while the xtc relevant parameters get iterated over
+
+`-p "write a story about the discovery of a Euclid Class SCP" -n 2000 -c 2000 -s 1337`
+
+(t = threshold, p = probability, xtcchain = minimal xtcchain enabled, t and p = 0 -> xtc deactivated)
 
 ## How to use it?
 
