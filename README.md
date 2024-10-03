@@ -46,10 +46,10 @@ Examples:
 
 # my fav - save to file named after properties - just copy paste all of it into your shell
 
-xtc_threshold=0.5
-xtc_probability=0.5
+xtc_threshold=0.1
+xtc_probability=0.9
 xtc_chain=false 
-model="Rocinante-12B-v1.1-Q8_0.gguf"
+model="gemma-2-Ifable-9B.Q8_0.gguf"
 
 # Build the command conditionally based on the value of xtc_chain
 if [ "$xtc_chain" = true ]; then
