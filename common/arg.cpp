@@ -1038,6 +1038,13 @@ gpt_params_context gpt_params_parser_init(gpt_params & params, llama_example ex,
         }
     ).set_sparam());
     add_opt(llama_arg(
+        {"--xtc-chain"},
+        "enables minimal xtc chain for testing and shit",
+        [](gpt_params & params) {
+            params.sparams.is_xtc_chain = true;
+        }
+    ).set_sparam());
+    add_opt(llama_arg(
         {"--mirostat"}, "N",
         format("use Mirostat sampling.\nTop K, Nucleus, Tail Free and Locally Typical samplers are ignored if used.\n"
         "(default: %d, 0 = disabled, 1 = Mirostat, 2 = Mirostat 2.0)", params.sparams.mirostat),

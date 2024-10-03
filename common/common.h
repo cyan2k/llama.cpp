@@ -123,6 +123,7 @@ struct gpt_sampler_params {
     float   mirostat_eta      = 0.10f; // learning rate
     bool    penalize_nl       = false; // consider newlines as a repeatable token
     bool    ignore_eos        = false;
+    bool    is_xtc_chain        = false;
     bool    no_perf           = false; // disable performance metrics
     float xtc_threshold = 0.1f;    
     float xtc_probability = 0.5f;   
@@ -133,6 +134,11 @@ struct gpt_sampler_params {
         GPT_SAMPLER_TYPE_TYPICAL_P,
         GPT_SAMPLER_TYPE_TOP_P,
         GPT_SAMPLER_TYPE_MIN_P,
+        GPT_SAMPLER_TYPE_TEMPERATURE,
+        GPT_SAMPLER_TYPE_XTC
+    };
+
+    std::vector<enum gpt_sampler_type> xtc_samplers = {
         GPT_SAMPLER_TYPE_TEMPERATURE,
         GPT_SAMPLER_TYPE_XTC
     };

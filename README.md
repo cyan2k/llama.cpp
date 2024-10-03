@@ -1,3 +1,122 @@
+# Implementation of the XTC sampler into llama.cpp
+
+## What is the XTC sampler?
+
+Read this:
+
+https://github.com/oobabooga/text-generation-webui/pull/6335
+
+TLDR; It's a way to ignore the top X tokens (exclude top choices = XTC). It removes all except the least likely token meeting a given threshold, with a given probability, which in theory keeps the coherence but increases creativity and kills GPTisms and other slop.
+
+Don't use this sampler when accuracy is important (although testing should be done, how much performance is actually getting lost).
+
+## How to use it?
+
+First you need to build llama.cpp (good luck)
+
+Then by default xtc is now part of the sampler chain, and active before softmax
+
+`logits -> logit-bias -> penalties -> top-k -> tail-free -> typical -> top-p -> min-p -> temp-ext -> xtc -> softmax -> dist`
+
+It exposes two parameters you can set via a cli argument `--xtc-threshold` and ``--xtc-probability`. Afer reading above link it should be clear what those do.
+
+For testing puposes you can activate a minimalistic xtc chain with `--xtc-chain` which results in following chain:
+
+`logits -> logit-bias -> penalties -> temp-ext -> xtc -> softmax -> dist`
+
+To deactivate the xtc sampler and using your normal llama.cpp chain, just set `--xtc-threshold` to `0.0`
+
+
+Examples:
+
+```
+# set threshold and probability 
+
+.\llama-cli.exe -m .\gemma-2-ifable-9b-q8_0.gguf -p "write a sotry about the discovery of a Euclid Class SCP" -n 2000 -s 1337 --xtc-threshold 0.3 --xtc-probability 0.7
+
+# enable minimal XTC chain
+
+ .\llama-cli.exe -m .\gemma-2-ifable-9b-q8_0.gguf -p "write a sotry about the discovery of a Euclid Class SCP" -n 2000 -s 1337 --xtc-chain
+
+# deactivate XTC
+
+  .\llama-cli.exe -m .\gemma-2-ifable-9b-q8_0.gguf -p "write a sotry about the discovery of a Euclid Class SCP" -n 2000 -s 1337 --xtc-threshold 0.0
+```
+
+## Where is the pull request?
+
+I promised myself not to be part of OSS anymore, so please someone take this, review it, clean it up, and make a PR for the main repo.
+
+A little nod in a comment or something would be nice tho.
+
+## Please help me build it *UwU*
+
+Fine, that's the way I do it:
+
+### Windows
+
+#### 1 Install requirements
+
+- Download https://visualstudio.microsoft.com/de/vs/community/
+- Install it while checking all those boxes
+
+![alt text](image.png)
+
+- Install CUDA toolkit if you have a nvidia GPU (order probably matters, because the CUDA Toolkit comes with stuff for Visual Studio)
+- clone this repo
+
+#### 2 Copy stuff that should be copied by the nvidia toolkit installer but for reasons it didn't do it
+
+Then put files from
+
+`C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.3\extras\visual_studio_integration\MSBuildExtensions`
+
+into:
+
+`C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Microsoft\VC\v170\BuildCustomizations`
+
+#### 3 Try different stuff until you found a working build config
+
+IMPORTANT: OPEN POWERSHELL FOR VS2022
+
+![alt text](image-1.png)
+
+It won't work with your normal CMD or powershell!
+
+Navigate to your llama.cpp folder
+
+Try this
+
+```
+cmake -B build -DGGML_CUDA=ON
+```
+
+If this doesn't work try this, and replace the path with your CUDO toolkit path
+
+```
+$env:GGML_CUDA='1'
+$env:FORCE_CMAKE='1'
+$env:CMAKE_ARGS='-DGGML_CUDA=on'
+$env:CMAKE_ARGS='-DCMAKE_GENERATOR_TOOLSET="cuda=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4"'
+cmake -B build -DGGML_CUDA=ON
+```
+
+Hopefully one of those did work. If yes, it's going to take some while now.
+
+Go generate some anime boobs with FLUX while you wait. If above is done do this
+
+#### 4 Build release executables
+
+```
+ cmake --build build --config Release
+```
+
+Go into the build/bin/release folder and have fun. And be a little proud on yourself. Not everyone gets to build this repo.
+
+### Macbook
+
+
+
 # llama.cpp
 
 ![llama](https://user-images.githubusercontent.com/1991296/230134379-7181e485-c521-4d23-a0d6-f7b3b61ba524.png)

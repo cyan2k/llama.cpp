@@ -173,9 +173,11 @@ struct gpt_sampler * gpt_sampler_init(const struct llama_model * model, const st
                 params.penalize_nl,
                 params.ignore_eos));
 
+    const auto & samplers = params.is_xtc_chain ? params.xtc_samplers : params.samplers;
+
     if (params.temp > 0.0f) {
         if (params.mirostat == 0) {
-            for (const auto & cnstr : params.samplers) {
+            for (const auto & cnstr : samplers) {
                 switch (cnstr) {
                     case GPT_SAMPLER_TYPE_TOP_K:
                         llama_sampler_chain_add(result->chain, llama_sampler_init_top_k    (params.top_k));
