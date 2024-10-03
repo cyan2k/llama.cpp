@@ -12,7 +12,7 @@ Don't use this sampler when accuracy is important (although testing should be do
 
 You find some text examples in the `xtc-examples` folder 
 
-All generated with the same prompt and seed while the xtc relevant parameters get iterated over
+All generated with the same prompt and seed while the xtc relevant parameters got iterated over
 
 `-p "write a story about the discovery of a Euclid Class SCP" -n 2000 -c 2000 -s 1337`
 
