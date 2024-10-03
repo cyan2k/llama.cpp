@@ -57,7 +57,6 @@ xtc_probability=0.9
 xtc_chain=false 
 model="gemma-2-Ifable-9B.Q8_0.gguf"
 
-# Build the command conditionally based on the value of xtc_chain
 if [ "$xtc_chain" = true ]; then
     chain_flag="--xtc-chain"
     chain_filename="_xtcchain"
