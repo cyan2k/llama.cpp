@@ -91,11 +91,11 @@ Fine, that's the way I do it:
 - Install CUDA toolkit if you have a nvidia GPU (order probably matters, because the CUDA Toolkit comes with stuff for Visual Studio)
 - clone this repo and switch to the "feature/xtc-sampler" branch
 
-#### 2 Copy stuff that should be copied by the nvidia toolkit installer but for reasons it didn't do it
+#### 2 Copy stuff that should be copied by the CUDA toolkit installer but for reasons it didn't do it
 
-Then put files from
+Put files from your CUDA directory
 
-`C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.3\extras\visual_studio_integration\MSBuildExtensions`
+`C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\extras\visual_studio_integration\MSBuildExtensions`
 
 into:
 
