@@ -83,7 +83,7 @@ Fine, that's the way I do it:
 ![alt text](image.png)
 
 - Install CUDA toolkit if you have a nvidia GPU (order probably matters, because the CUDA Toolkit comes with stuff for Visual Studio)
-- clone this repo
+- clone this repo and switch to the "feature/xtc-sampler" branch
 
 #### 2 Copy stuff that should be copied by the nvidia toolkit installer but for reasons it didn't do it
 
@@ -135,7 +135,7 @@ Go into the build/bin/release folder and have fun. And be a little proud of your
 
 ### Mac
 
-- clone this repo
+- clone this repo and switch to the "feature/xtc-sampler" branch
 - run `make`
 
 There's nothing to be proud of, sorry.
