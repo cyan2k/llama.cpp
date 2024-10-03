@@ -52,10 +52,16 @@ Examples:
 
 # save output to file with dynamic file names
 
-xtc_threshold=0.1
-xtc_probability=0.9
+xtc_threshold=0.0
+xtc_probability=0.0
 xtc_chain=false 
+tokens=4096
+seed=1337
+temp=1.0
+min_p=0.1
+top_p=0.95
 model="gemma-2-Ifable-9B.Q8_0.gguf"
+prompt="Science Fiction: The Last Transmission - Write a story that takes place entirely within a spaceship's cockpit as the sole surviving crew member attempts to send a final message back to Earth before the ship's power runs out. The story should explore themes of isolation, sacrifice, and the importance of human connection in the face of adversity. 800-1000 words."
 
 if [ "$xtc_chain" = true ]; then
     chain_flag="--xtc-chain"
@@ -65,8 +71,10 @@ else
     chain_filename=""
 fi
 
-./llama-cli -m ${model} -p "write a story about the discovery of a Euclid Class SCP" -n 2000 -c 2000 -s 1337 ${chain_flag} --xtc-threshold $xtc_threshold --xtc-probability $xtc_probability > "xtc-examples/output_${model}_t_${xtc_threshold}_p_${xtc_probability}_${chain_filename}.txt"
+./llama-cli -m ${model} -p "${prompt}" -n ${tokens} -c ${tokens} -s {seed} --temp {temp} --top-p {top_p} --min-p {min_p} --xtc-threshold $xtc_threshold --xtc-probability $xtc_probability ${chain_flag} > "xtc-examples/output_${model}_t_${xtc_threshold}_p_${xtc_probability}_${chain_filename}.txt"
 ```
+
+Use the script `xtc-sample-gen.sh` to create a batch of examples in one go
 
 ## Where is the pull request?
 
