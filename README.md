@@ -20,7 +20,7 @@ Then by default xtc is now part of the sampler chain, and active before softmax
 
 `logits -> logit-bias -> penalties -> top-k -> tail-free -> typical -> top-p -> min-p -> temp-ext -> xtc -> softmax -> dist`
 
-It exposes two parameters you can set via a cli argument `--xtc-threshold` and `--xtc-probability`. Afer reading above link it should be clear what those do.
+It exposes two parameters you can set via the cli arguments `--xtc-threshold` and `--xtc-probability`. After reading above link it should be clear what those do.
 
 For testing puposes you can activate a minimalistic xtc chain with `--xtc-chain` which results in following chain:
 
