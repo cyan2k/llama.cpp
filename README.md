@@ -111,7 +111,7 @@ Try this
 cmake -B build -DGGML_CUDA=ON
 ```
 
-If this doesn't work try this, and replace the path with your CUDO toolkit path
+If this doesn't work try this, and replace the path with your CUDA toolkit path
 
 ```
 $env:GGML_CUDA='1'
