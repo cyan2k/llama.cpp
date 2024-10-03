@@ -32,7 +32,7 @@ For testing puposes you can activate a minimalistic xtc chain with `--xtc-chain`
 
 `logits -> logit-bias -> penalties -> temp-ext -> xtc -> softmax -> dist`
 
-To deactivate the xtc sampler and using your normal llama.cpp chain, just set `--xtc-threshold` to `0.0`
+To deactivate the xtc sampler and using your normal llama.cpp chain, just set `--xtc-probability` to `0.0`
 
 
 Examples:
@@ -48,7 +48,7 @@ Examples:
 
 # deactivate XTC
 
-.\llama-cli.exe -m .\gemma-2-ifable-9b-q8_0.gguf -p "write a sotry about the discovery of a Euclid Class SCP" -n 2000 -s 1337 --xtc-threshold 0.0
+.\llama-cli.exe -m .\gemma-2-ifable-9b-q8_0.gguf -p "write a sotry about the discovery of a Euclid Class SCP" -n 2000 -s 1337 --xtc-probability 0.0
 
 # save output to file with dynamic file names
 
