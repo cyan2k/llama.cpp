@@ -10,6 +10,8 @@ TLDR; It's a way to ignore the top X tokens (exclude top choices = XTC). It remo
 
 Don't use this sampler when accuracy is important (although testing should be done, how much performance is actually getting lost).
 
+You find some text examples in the `xtc-examples` folder (t = threshold, p = probability, xtcchain = minimal xtcchain enabled, t and p = 0 is default llama.cpp and xtc deactivated)
+
 ## How to use it?
 
 First you need to build llama.cpp (good luck)
@@ -41,6 +43,24 @@ Examples:
 # deactivate XTC
 
   .\llama-cli.exe -m .\gemma-2-ifable-9b-q8_0.gguf -p "write a sotry about the discovery of a Euclid Class SCP" -n 2000 -s 1337 --xtc-threshold 0.0
+
+# my fav - save to file named after properties - just copy paste all of it into your shell
+
+xtc_threshold=0.5
+xtc_probability=0.5
+xtc_chain=false 
+model="Rocinante-12B-v1.1-Q8_0.gguf"
+
+# Build the command conditionally based on the value of xtc_chain
+if [ "$xtc_chain" = true ]; then
+    chain_flag="--xtc-chain"
+    chain_filename="_xtcchain"
+else
+    chain_flag=""
+    chain_filename=""
+fi
+
+./llama-cli -m ${model} -p "write a story about the discovery of a Euclid Class SCP" -n 2000 -c 2000 -s 1337 ${chain_flag} --xtc-threshold $xtc_threshold --xtc-probability $xtc_probability > "xtc-examples/output_${model}_t_${xtc_threshold}_p_${xtc_probability}_${chain_filename}.txt"
 ```
 
 ## Where is the pull request?
