@@ -44,13 +44,13 @@ Examples:
 
 # enable minimal XTC chain
 
- .\llama-cli.exe -m .\gemma-2-ifable-9b-q8_0.gguf -p "write a sotry about the discovery of a Euclid Class SCP" -n 2000 -s 1337 --xtc-chain
+.\llama-cli.exe -m .\gemma-2-ifable-9b-q8_0.gguf -p "write a sotry about the discovery of a Euclid Class SCP" -n 2000 -s 1337 --xtc-chain
 
 # deactivate XTC
 
-  .\llama-cli.exe -m .\gemma-2-ifable-9b-q8_0.gguf -p "write a sotry about the discovery of a Euclid Class SCP" -n 2000 -s 1337 --xtc-threshold 0.0
+.\llama-cli.exe -m .\gemma-2-ifable-9b-q8_0.gguf -p "write a sotry about the discovery of a Euclid Class SCP" -n 2000 -s 1337 --xtc-threshold 0.0
 
-# my fav - save to file named after properties - just copy paste all of it into your shell
+# save output to file with dynamic file names
 
 xtc_threshold=0.1
 xtc_probability=0.9
