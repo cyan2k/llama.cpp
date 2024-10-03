@@ -111,9 +111,14 @@ Go generate some anime boobs with FLUX while you wait. If above is done do this
  cmake --build build --config Release
 ```
 
-Go into the build/bin/release folder and have fun. And be a little proud on yourself. Not everyone gets to build this repo.
+Go into the build/bin/release folder and have fun. And be a little proud of yourself. Not everyone gets to build this repo.
 
-### Macbook
+### Mac
+
+- clone this repo
+- run `make`
+
+There's nothing to be proud of, sorry.
 
 
 
