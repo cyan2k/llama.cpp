@@ -1,0 +1,11 @@
+Model: gemma-2-Ifable-9B.Q8_0.gguf
+Prompt: Write a business mail to a client asking for a meeting to discuss a new project.
+This project should highlight some security concepts in azure. The mail should give a brief overview of the project and the benefits of using azure services. The mail should be professional and concise.
+Tokens: 4096
+Seed: 666
+Temperature: 1.0
+Min P: 0.1
+Top P: 0.95
+XTC Threshold: 0.05,0.1,0.15,0.2
+XTC Probability: 0.3,0.5,0.7
+XTC Chain: false

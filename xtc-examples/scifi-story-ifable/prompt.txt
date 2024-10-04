@@ -1,0 +1,10 @@
+Model: gemma-2-Ifable-9B.Q8_0.gguf
+Prompt: Science Fiction: The Last Transmission - Write a story that takes place entirely within a spaceship's cockpit as the sole surviving crew member attempts to send a final message back to Earth before the ship's power runs out. The story should explore themes of isolation, sacrifice, and the importance of human connection in the face of adversity. 800-1000 words.
+Tokens: 4096
+Seed: 1337
+Temperature: 1.0
+Min P: 0.1
+Top P: 0.95
+XTC Threshold: 0.05,0.1,0.15,0.2
+XTC Probability: 0.3,0.5,0.7
+XTC Chain: false

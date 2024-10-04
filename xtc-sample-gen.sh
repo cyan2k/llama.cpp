@@ -1,16 +1,17 @@
 #!/bin/bash
 
-xtc_threshold_list="0.1,0.2,0.3,0.4,0.9"  # Example list of xtc_threshold values
-xtc_probability_list="0.5,0.7,1.0"  # Example list of xtc_probability values
+xtc_threshold_list="0.05,0.1,0.15,0.2"  # Example list of xtc_threshold values
+xtc_probability_list="0.3,0.5,0.7"  # Example list of xtc_probability values
 xtc_chain=false 
 tokens=4096
-seed=666
+seed=1337
 temp=1.0
 min_p=0.1
 top_p=0.95
-model="gemma-2-Ifable-9B.Q8_0.gguf"
-prompt="Science Fiction: The Last Transmission - Write a story that takes place entirely within a spaceship's cockpit as the sole surviving crew member attempts to send a final message back to Earth before the ship's power runs out. The story should explore themes of isolation, sacrifice, and the importance of human connection in the face of adversity. 800-1000 words."
-outputfolder="xtc-gemma"  # Output folder for results
+model="gemma-2-9b-it-Q8_0.gguf"
+prompt="Write a business mail to a client asking for a meeting to discuss a new project.
+This project should highlight some security concepts in azure. The mail should give a brief overview of the project and the benefits of using azure services. The mail should be professional and concise."
+outputfolder="business-mail2"  # Output folder for results
 
 write_prompt_file() {
     local output_file=$1
@@ -29,16 +30,16 @@ EOL
 }
 
 # Create output folder if it doesn't exist
-if [ ! -d "$outputfolder" ]; then
-    mkdir -p "$outputfolder"
-    echo "Created output folder: $outputfolder"
+if [ ! -d "xtc-examples/$outputfolder" ]; then
+    mkdir -p "xtc-examples/$outputfolder"
+    echo "Created output folder: xtc-examples/$outputfolder"
 fi
 
-write_prompt_file "${outputfolder}"
+write_prompt_file "xtc-examples/${outputfolder}"
 
 # Single run with xtc_chain=false, xtc_probability=0, xtc_threshold=0
 echo "Starting preliminary run: xtc_chain=false, xtc_probability=0, xtc_threshold=0"
-output_file="${outputfolder}/output_${model}__s_${seed}_preliminary_run.txt"
+output_file="xtc-examples/${outputfolder}/output_${model}__s_${seed}_preliminary_run.txt"
 ./llama-cli -m ${model} -p "${prompt}" -n ${tokens} -c ${tokens} -s ${seed} --temp ${temp} --top-p ${top_p} --min-p ${min_p} --xtc-threshold 0 --xtc-probability 0 | tee "${output_file}"
 
 # Convert comma-separated lists into arrays
@@ -66,7 +67,7 @@ for xtc_threshold in "${xtc_threshold_array[@]}"; do
             fi
 
             # Define the output file name
-            output_file="${outputfolder}/output_${model}_t_${xtc_threshold}_p_${xtc_probability}${chain_filename}_s_${seed}.txt"
+            output_file="xtc-examples/${outputfolder}/output_${model}_t_${xtc_threshold}_p_${xtc_probability}${chain_filename}_s_${seed}.txt"
 
             # Run the command, save output to the file, and display it in the CLI
             ./llama-cli -m ${model} -p "${prompt}" -n ${tokens} -c ${tokens} -s ${seed} --temp ${temp} --top-p ${top_p} --min-p ${min_p} --xtc-threshold ${xtc_threshold} --xtc-probability ${xtc_probability} ${chain_flag} | tee "${output_file}"
